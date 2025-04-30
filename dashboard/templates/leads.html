@@ -1,0 +1,54 @@
+<!-- leads.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lead Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-3xl font-bold mb-6">📋 Lead Management</h1>
+
+  <!-- Upload Form -->
+  {% include 'upload.html' %}
+
+  <!-- Search -->
+  <form method="GET" class="my-6 max-w-xl">
+    <input type="text" name="q" placeholder="Search by name, phone, email, vehicle..." value="{{ request.GET.q }}"
+           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none">
+    <button type="submit" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Search</button>
+  </form>
+
+  <!-- Lead Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow">
+      <thead>
+        <tr class="bg-gray-200 text-left text-sm">
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Phone</th>
+          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Vehicle</th>
+          <th class="px-4 py-2">Source</th>
+          <th class="px-4 py-2">Salesperson</th>
+          <th class="px-4 py-2">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in leads %}
+        <tr class="border-t text-sm">
+          <td class="px-4 py-2">{{ lead.name }}</td>
+          <td class="px-4 py-2">{{ lead.phone }}</td>
+          <td class="px-4 py-2">{{ lead.email }}</td>
+          <td class="px-4 py-2">{{ lead.vehicle_interest }}</td>
+          <td class="px-4 py-2">{{ lead.source }}</td>
+          <td class="px-4 py-2">{{ lead.salesperson }}</td>
+          <td class="px-4 py-2">{{ lead.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td class="px-4 py-4 text-gray-500" colspan="7">No leads found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

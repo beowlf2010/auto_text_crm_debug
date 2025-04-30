@@ -1,0 +1,31 @@
+<!-- upload.html -->
+<form id="csv-upload-form" action="{% url 'upload-leads' %}" method="POST" enctype="multipart/form-data" class="p-4 border rounded-xl shadow bg-white w-full max-w-md">
+  {% csrf_token %}
+  <label class="block mb-2 text-sm font-medium text-gray-700">Upload Leads CSV</label>
+  <input type="file" name="csv_file" accept=".csv" required class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none" />
+  <button type="submit" class="mt-4 w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">Upload</button>
+</form>
+
+<script>
+document.getElementById("csv-upload-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+
+    fetch("{% url 'upload-leads' %}", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ Upload successful! " + data.created + " new leads added.");
+            location.reload();
+        } else {
+            alert("❌ Upload failed: " + data.error);
+        }
+    });
+});
+</script>
