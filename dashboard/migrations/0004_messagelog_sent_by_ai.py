@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='sent_by_ai',
             field=models.BooleanField(default=False),
         ),

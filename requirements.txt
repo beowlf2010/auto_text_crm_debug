@@ -1,13 +1,11 @@
-Django
-celery
-redis
-twilio
-openai
-django-celery-beat
-django-celery-results
-python-dotenv
+# C:\Projects\auto_text_crm_dockerized_clean\requirements.txt
+Django>=4.2,<5
+celery>=5.3
+redis>=5.0
 gunicorn
-django-cors-headers
 whitenoise
-
-
+dj-database-url
+psycopg2-binary
+python-dotenv
+openai
+twilio

@@ -4,9 +4,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dashboard', '0008_remove_messagelog_message_messagelog_read_and_more'),
+        ("dashboard", "0008_remove_messagelog_message_messagelog_read_and_more"),
     ]
 
     operations = [

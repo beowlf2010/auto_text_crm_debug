@@ -1,7 +1,7 @@
 # C:\Projects\auto_text_crm_dockerized_clean\auto_text_crm\inbox\views.py
 """
 Webhook that captures every inbound SMS from Twilio, stores it in InboxMessage /
-MessageLog, and auto‑pauses AI follow‑ups when the customer replies “STOP”.
+Message, and auto‑pauses AI follow‑ups when the customer replies “STOP”.
 """
 
 import os
@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 
 from twilio.request_validator import RequestValidator
 
-from dashboard.models import Lead, MessageLog  # Lead + log live in dashboard app
+from dashboard.models import Lead, Message  # Lead + log live in dashboard app
 
 
 # ------------------------------------------------------------------
@@ -55,8 +55,8 @@ def twilio_sms_webhook(request):
         )
     )
 
-    # ── 4.  Save in MessageLog / InboxMessage ──────────────────────
-    MessageLog.objects.create(
+    # ── 4.  Save in Message / InboxMessage ──────────────────────
+    Message.objects.create(
         lead=lead,
         from_number=from_number,
         content=body,

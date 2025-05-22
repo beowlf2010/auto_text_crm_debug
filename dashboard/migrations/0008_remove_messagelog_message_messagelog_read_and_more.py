@@ -11,16 +11,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='messagelog',
+            model_name='Message',
             name='message',
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='read',
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='messagelog',
+            model_name='Message',
             name='source',
             field=models.CharField(choices=[('AI', 'AI'), ('Manual', 'Manual'), ('IN', 'Incoming'), ('System', 'System')], default='Manual', max_length=50),
         ),

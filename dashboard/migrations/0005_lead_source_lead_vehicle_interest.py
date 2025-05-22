@@ -4,9 +4,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dashboard', '0004_messagelog_sent_by_ai'),
+        ("dashboard", "0004_messagelog_sent_by_ai"),  # <- make it match the filename
     ]
 
     operations = [

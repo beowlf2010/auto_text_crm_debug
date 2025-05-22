@@ -1,0 +1,31 @@
+﻿# C:\Projects\auto_text_crm_dockerized_clean\AutoTextCRM\settings_render.py
+from .settings import *          # noqa
+import dj_database_url, os, pathlib
+
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+DEBUG = False
+SECRET_KEY = os.getenv("SECRET_KEY")              # must be set in Render
+
+ALLOWED_HOSTS = ["localhost", ".onrender.com"]
+
+DATABASES = {
+    "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+
+# ── Celery / Redis ────────────────────────────────────────────────────────────
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_TIMEZONE = "America/Chicago"
+CELERY_ENABLE_UTC = False
+
+# ── Static files via WhiteNoise ───────────────────────────────────────────────
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
+MIDDLEWARE = ["whitenoise.middleware.WhiteNoiseMiddleware", *MIDDLEWARE]
+
+# ── Security ─────────────────────────────────────────────────────────────────
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+LOGIN_REDIRECT_URL = "/"

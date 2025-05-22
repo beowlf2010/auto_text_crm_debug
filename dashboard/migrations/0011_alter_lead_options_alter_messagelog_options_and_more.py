@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             options={'ordering': ['-created_at']},
         ),
         migrations.AlterModelOptions(
-            name='messagelog',
+            name='Message',
             options={'ordering': ['-timestamp']},
         ),
         migrations.AddField(
@@ -30,17 +30,17 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='delivery_status',
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='follow_up_stage',
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='twilio_sid',
             field=models.CharField(blank=True, max_length=100, null=True),
         ),

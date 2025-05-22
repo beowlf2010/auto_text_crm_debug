@@ -1,0 +1,84 @@
+# C:\Projects\auto_text_crm_dockerized_clean\render.yaml
+services:
+  - type: postgres
+    name: autotext-crm-db
+    plan: free
+
+  - type: redis
+    name: autotext-crm-redis
+    plan: free
+
+  - type: web
+    name: autotext-crm-web
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate --noinput
+    startCommand: gunicorn AutoTextCRM.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: AutoTextCRM.settings_render
+      - key: SECRET_KEY
+        sync: false          # add in Render dashboard
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+      - key: DATABASE_URL
+        fromService:
+          type: postgres
+          name: autotext-crm-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: autotext-crm-redis
+          property: connectionString
+
+  - type: worker                # Celery worker
+    name: autotext-crm-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A AutoTextCRM worker --loglevel=info --pool=solo
+    envVars:
+      - fromGroup: autotext-crm-env
+      - key: DATABASE_URL
+        fromService:
+          type: postgres
+          name: autotext-crm-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: autotext-crm-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: AutoTextCRM.settings_render
+
+  - type: worker                # Celery beat scheduler
+    name: autotext-crm-beat
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A AutoTextCRM beat --loglevel=info
+    envVars:
+      - fromGroup: autotext-crm-env
+      - key: DATABASE_URL
+        fromService:
+          type: postgres
+          name: autotext-crm-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: autotext-crm-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: AutoTextCRM.settings_render
+
+envVarGroups:
+  - name: autotext-crm-env      # create this group in Render & paste secrets

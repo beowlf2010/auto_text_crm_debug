@@ -1,3 +1,5 @@
+# C:\Projects\auto_text_crm_dockerized_clean\dashboard\upload_leads_view.py
+
 import csv
 import re
 from dateutil.parser import parse as dateparse
@@ -6,6 +8,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from dashboard.models import Lead
+
 
 @csrf_exempt
 def upload_leads_view(request):
@@ -18,11 +21,17 @@ def upload_leads_view(request):
         updated_count = 0
         failed = 0
 
+        # 🔧 Build a case-insensitive map of model fields once
+        MODEL_FIELDS = {f.name.lower(): f.name for f in Lead._meta.get_fields()}
+
         for i, row in enumerate(reader, start=2):
-            if not row or not row.get("cellphone"):
+            if not row:
                 continue
 
-            phone = row.get("cellphone", "").strip()
+            # 🔍 Lower-case view of the row for easy look-ups
+            row_lc = {k.lower(): (v or "").strip() for k, v in row.items()}
+
+            phone = row_lc.get("cellphone", "")
             if not phone:
                 failed += 1
                 continue
@@ -30,17 +39,22 @@ def upload_leads_view(request):
             lead_data = {}
             extra_data = {}
 
-            for field, value in row.items():
-                val = value.strip()
-                if hasattr(Lead, field):
-                    lead_data[field] = val
+            # 🚀 Case-insensitive header → model mapping
+            for csv_key, value in row.items():
+                val = (value or "").strip()
+                if not val:
+                    continue
+
+                model_key = MODEL_FIELDS.get(csv_key.lower())
+                if model_key:
+                    lead_data[model_key] = val
                 else:
-                    extra_data[field] = val
+                    extra_data[csv_key] = val
 
             # 🚗 Vehicle detection
-            year = row.get("VehicleYear", "").strip()
-            make = row.get("VehicleMake", "").strip()
-            model = row.get("VehicleModel", "").strip()
+            year = row_lc.get("vehicleyear", "")
+            make = row_lc.get("vehiclemake", "")
+            model = row_lc.get("vehiclemodel", "")
             if make or model:
                 lead_data["vehicle_interest"] = f"{year} {make} {model}".strip()
 
@@ -51,7 +65,7 @@ def upload_leads_view(request):
                         dt = dateparse(value, fuzzy=True)
                         extra_data["appointment_time"] = str(dt)
                         break
-                except:
+                except Exception:
                     continue
 
             lead_data["extra_data"] = extra_data  # 💡 final dict injection
@@ -59,7 +73,7 @@ def upload_leads_view(request):
             try:
                 lead, created = Lead.objects.update_or_create(
                     cellphone=phone,
-                    defaults=lead_data
+                    defaults=lead_data,
                 )
                 if created:
                     created_count += 1
@@ -68,7 +82,10 @@ def upload_leads_view(request):
             except Exception as e:
                 return HttpResponse(f"❌ ERROR on row {i}: {str(e)}", status=500)
 
-        messages.success(request, f"✅ {created_count} created, {updated_count} updated, {failed} failed.")
-        return redirect("dashboard-home")
+        messages.success(
+            request,
+            f"✅ {created_count} created, {updated_count} updated, {failed} failed.",
+        )
+        return redirect("dashboard_home")
 
     return HttpResponse("❌ No CSV file received.", status=400)

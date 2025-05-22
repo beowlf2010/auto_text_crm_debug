@@ -2,13 +2,13 @@
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_GET
 
-from dashboard.models import MessageLog
+from dashboard.models import Message
 
 
 @require_GET
 def get_message_history(request, lead_id: int):
     """
-    JSON list of all MessageLog rows for the given lead, ordered oldest → newest.
+    JSON list of all Message rows for the given lead, ordered oldest → newest.
 
     Example response element:
     {
@@ -21,11 +21,11 @@ def get_message_history(request, lead_id: int):
     }
     """
     # quick existence check to return 404 on bad ID
-    if not MessageLog.objects.filter(lead_id=lead_id).exists():
+    if not Message.objects.filter(lead_id=lead_id).exists():
         raise Http404("Lead not found")
 
     messages = (
-        MessageLog.objects.filter(lead_id=lead_id)
+        Message.objects.filter(lead_id=lead_id)
         .order_by("timestamp")
         .values(
             "id",

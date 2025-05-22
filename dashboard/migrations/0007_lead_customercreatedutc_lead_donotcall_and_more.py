@@ -169,17 +169,17 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='direction',
             field=models.CharField(choices=[('IN', 'Incoming'), ('OUT', 'Outgoing')], default='OUT', max_length=10),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='from_number',
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AddField(
-            model_name='messagelog',
+            model_name='Message',
             name='message',
             field=models.TextField(blank=True, null=True),
         ),
@@ -199,12 +199,12 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='messagelog',
+            model_name='Message',
             name='lead',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='dashboard.lead'),
         ),
         migrations.AlterField(
-            model_name='messagelog',
+            model_name='Message',
             name='source',
             field=models.CharField(choices=[('AI', 'AI'), ('Manual', 'Manual'), ('IN', 'Incoming')], max_length=50),
         ),

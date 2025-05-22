@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from dashboard.models import Lead, MessageLog
+from dashboard.models import Lead, Message
 
 
 class GenerateAIMessageTest(TestCase):
@@ -22,7 +22,7 @@ class GenerateAIMessageTest(TestCase):
 
 
 class ManualMessageTest(TestCase):
-    """POST /api/send-message/ should create a Manual MessageLog entry."""
+    """POST /api/send-message/ should create a Manual Message entry."""
 
     def setUp(self):
         self.client = Client()
@@ -35,20 +35,20 @@ class ManualMessageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTrue(
-            MessageLog.objects.filter(
+            Message.objects.filter(
                 lead=self.lead, content="Hello", source="Manual"
             ).exists()
         )
 
 
-class MessageLogRetrievalTest(TestCase):
+class MessageRetrievalTest(TestCase):
     """GET /message-thread/<lead_id>/ should return all logs in chronological order."""
 
     def setUp(self):
         self.client = Client()
         self.lead = Lead.objects.create(name="Thread Lead", cellphone="9998887777")
-        MessageLog.objects.create(lead=self.lead, content="First", source="Manual")
-        MessageLog.objects.create(lead=self.lead, content="Second", source="IN")
+        Message.objects.create(lead=self.lead, content="First", source="Manual")
+        Message.objects.create(lead=self.lead, content="Second", source="IN")
 
     def test_message_thread_returns_logs(self):
         url = reverse("get_message_thread", args=[self.lead.id])

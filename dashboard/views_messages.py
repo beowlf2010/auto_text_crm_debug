@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from twilio.rest import Client
 
-from .models import Lead, MessageLog
+from .models import Lead, Message
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ def send_message_view(request):
             to=lead.cellphone,
         )
 
-        MessageLog.objects.create(
+        Message.objects.create(
             lead=lead,
             content=body,
             direction="OUT",
@@ -95,7 +95,7 @@ def twilio_webhook(request):
         return HttpResponse(status=204)
 
     # log the message
-    MessageLog.objects.create(
+    Message.objects.create(
         lead=lead,
         from_number=from_number,
         content=body,

@@ -164,7 +164,7 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=255),
         ),
         migrations.CreateModel(
-            name='MessageLog',
+            name='Message',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', models.TextField()),

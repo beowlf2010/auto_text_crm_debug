@@ -1,17 +1,23 @@
 # C:\Projects\auto_text_crm_dockerized_clean\auto_text_crm\settings.py
-# 🗓 Updated 2025-04-23 – Beat task name fixed
+# 🗓 Updated 2025-05-17 – corrected ALLOWED_HOSTS
 
-# BEGIN auto_text_crm/settings.py
 import os
 from pathlib import Path
 from celery.schedules import crontab
 from dotenv import load_dotenv
+from decouple import config
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ── Core Django settings ──────────────────────────────────────────────────────
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+
+TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
+
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -19,30 +25,28 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "web",
     "autotext.ngrok.app",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
 ]
 
-# settings.py  (anywhere after ALLOWED_HOSTS)
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
 INSTALLED_APPS = [
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
-    "django_celery_beat",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party
+    "django_celery_beat",
     "rest_framework",
-    # project apps
+    "corsheaders",
+    # Project apps
     "auto_text_crm.inbox",
     "dashboard",
-    # third-party
-    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -96,22 +100,32 @@ TIME_ZONE = "America/Chicago"
 USE_I18N = True
 USE_TZ = True
 
+# ── Static files ──────────────────────────────────────────────────────────────
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 CORS_ALLOW_CREDENTIALS = True
 
-# Celery
+# ── Celery core settings ──────────────────────────────────────────────────────
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
+# ── Celery Beat schedule ──────────────────────────────────────────────────────
+CELERY_BEAT_SCHEDULE = {
+    # Re-score every lead in the DB every 15 minutes
+    "score-all-leads-every-15min": {
+        "task": "dashboard.tasks.score_all_leads",
+        "schedule": crontab(minute="*/15"),
+    },
+}
 
+# ── OpenAI ────────────────────────────────────────────────────────────────────
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-# END auto_text_crm/settings.py

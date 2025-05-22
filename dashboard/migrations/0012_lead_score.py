@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0011_alter_lead_options_alter_messagelog_options_and_more'),
+        ("dashboard", "0011_alter_lead_options_alter_messagelog_options_and_more"),
     ]
 
     operations = [
